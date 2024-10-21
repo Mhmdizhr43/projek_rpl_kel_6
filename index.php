@@ -15,12 +15,12 @@ $schedules = $stmt->fetchAll();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard - Reminder App</title>
+    <title>Dashboard - Web Pengingat</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <h1>Welcome to the Dashboard</h1>
-    <a href="add_schedule.php">Add New Schedule</a>
+    <a href="add_schedule.php">Tambahkan Jadwal</a>
     <a href="logout.php">Logout</a>
     <table>
         <tr>
@@ -33,9 +33,9 @@ $schedules = $stmt->fetchAll();
             <td><?php echo htmlspecialchars($schedule['title']); ?></td>
             <td><?php echo htmlspecialchars($schedule['date_time']); ?></td>
             <td>
-                <a href="view_schedule.php?id=<?php echo $schedule['id']; ?>">View</a>
+                <a href="view_schedule.php?id=<?php echo $schedule['id']; ?>">Lihat</a>
                 <a href="edit_schedule.php?id=<?php echo $schedule['id']; ?>">Edit</a>
-                <a href="delete_schedule.php?id=<?php echo $schedule['id']; ?>">Delete</a>
+                <a href="delete_schedule.php?id=<?php echo $schedule['id']; ?>">Hapus</a>
             </td>
         </tr>
         <?php endforeach; ?>
