@@ -1,66 +1,80 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
+session_start();
 require 'vendor/autoload.php';
+include 'config.php';
 
-function kirimEmail($useremail,$title, $subjek, $pesan) {
+use vendor\PHPMailer\src\PHPMailer;
+use vendor\PHPMailer\src\Exception;
+
+// Pastikan pengguna sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Fungsi untuk mengirim email
+function sendReminderEmail($to, $subject, $body) {
     $mail = new PHPMailer(true);
-    
     try {
-       
+        // Pengaturan server SMTP
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com'; // SMTP server
+        $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'fadlinan347@gmail.com'; 
-        $mail->Password   = 'epwh adez vldo rchv'; 
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
-        $mail->Port       = 587;
+        $mail->Username   = 'muhizhar43@gmail.com'; // Ganti dengan email Anda
+        $mail->Password   = 'briqjlvltehcruak';     // Ganti dengan password aplikasi email
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
 
-        // set pengirim dan pesan 
-        $mail->setFrom('fadlinan347@gmail.com', $title);
-        $mail->addAddress($useremail);
-
-        // Set email content
+        // Pengaturan pengirim dan penerima
+        $mail->setFrom('muhizhar43@gmail.com', 'Izhar');
+        $mail->addAddress($to);
         $mail->isHTML(true);
-        $mail->Subject = $subjek;
-        $mail->Body    = $pesan;
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
 
-        // Send email
         $mail->send();
-        echo 'Email berhasil terkirim';
     } catch (Exception $e) {
-        echo "Email gagal dikirim. Error: {$mail->ErrorInfo}";
+        echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 }
 
-// require 'config.php';
+// Proses form untuk menambahkan jadwal
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $title = $_POST['title'];
+    $description = $_POST['description'];
+    $date_time = $_POST['date_time'];
+    $user_id = $_SESSION['user_id'];
+    $email = $_POST['email']; // Ambil email dari form
 
+    // Simpan data jadwal ke database
+    $stmt = $conn->prepare("INSERT INTO schedules (user_id, title, description, date_time, email) VALUES (?, ?, ?, ?, ?)");
+    if ($stmt->execute([$user_id, $title, $description, $date_time, $email])) {
+        // Kirim email pengingat setelah jadwal berhasil ditambahkan
+        $subject = "Pengingat: $title";
+        $body = "Halo, ini adalah pengingat untuk jadwal: $title. Deskripsi: $description. Waktu: $date_time.";
+        sendReminderEmail($email, $subject, $body);
 
-// START LOGIC PEmeriksaaan Waktu dalam  DBMS
-
-$sql = "SELECT * FROM <schedules> WHERE <reminder_time> BETWEEN NOW() AND (NOW() + INTERVAL 2 HOUR)";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$reminders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-// tes
-// if ($reminders) { 
-var_dump($reminders);
-//     foreach ($reminders as $reminder) {
-//         kirimEmail($to, $reminders['send_reminder'], $subject, $message);
-//     }
-// } else {
-//     echo "Tidak ada jadwl dalam 2 jam ke depan.";
-// } 
-
-// END
-
-// $reminders = 
-// [
-//
-//     'email' => 'fadlinan347@gmail.com',
-//     'title' => 'Jadwal Matkuliah',
-//     'description' => 'Pukul 10.00 Matakuliah Basis Data masuk !!'           
-// ];
-
+        header("Location: index.php");
+    } else {
+        echo "Failed to add schedule. Try again.";
+    }
+}
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tambahkan Pengingat - Web Pengingat</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <form action="add_schedule.php" method="post">
+        <h2>Tambahkan Pengingat</h2>
+        <input type="text" name="title" placeholder="Judul Jadwal" required>
+        <textarea name="description" placeholder="Deskripsi" required></textarea>
+        <input type="datetime-local" name="date_time" required>
+        <input type="email" name="email" placeholder="Masukkan email" required>
+        <button type="submit">Tambahkan Jadwal</button>
+    </form>
+</body>
+</html>
