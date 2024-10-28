@@ -24,7 +24,8 @@ $schedules = $stmt->fetchAll();
     <a href="logout.php">Logout</a>
     <table>
         <tr>
-            <th>Nama kapal 2</th>
+            <th>Nama kapal</th>
+            <th>Nama orang</th>
             <th>Tanggal</th>
             <th>Date & Time</th>
             <th>Actions</th>
