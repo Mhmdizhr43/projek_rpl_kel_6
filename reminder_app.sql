@@ -28,17 +28,27 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `schedules` (
+<<<<<<< HEAD
   `id` int NOT NULL AUTO_INCREMENT,
+=======
+  `id` int NOT NULL,
+>>>>>>> f2db96f3b3e034b8b74bd4eaebc61c62bd8b6c39
   `user_id` int NOT NULL,
   `title` varchar(255) NOT NULL,
   `description` text,
   `date_time` datetime NOT NULL,
   `email` varchar(255) DEFAULT NULL,
+<<<<<<< HEAD
   `reminder_sent` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+=======
+  `reminder_sent` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+>>>>>>> f2db96f3b3e034b8b74bd4eaebc61c62bd8b6c39
 --
 -- Dumping data for table `schedules`
 --
