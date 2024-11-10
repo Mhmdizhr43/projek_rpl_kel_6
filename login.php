@@ -1,29 +1,20 @@
 <?php
-include 'config.php'; 
+include 'config.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    try {
-        if ($conn) {
-            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC); 
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]); PERBAIKICODE INI 
+    $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password']) && $user['verified']) {
-                $_SESSION['user_id'] = $user['id'];
-                header("Location: index.php");
-                exit; 
-            } else {
-                $error = "Invalid credentials or email not verified.";
-            }
-        } else {
-            $error = "Database connection error.";
-        }
-    } catch (PDOException $e) {
-        $error = "Error: " . $e->getMessage();
+    if ($user && password_verify($password, $user['password']) && $user['verified']) {
+        $_SESSION['user_id'] = $user['id'];
+        header("Location: index.php");
+    } else {
+        $error = "Invalid credentials or email not verified.";
     }
 }
 ?>
